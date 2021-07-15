@@ -5,13 +5,13 @@ import pprint
 chain = BlockChain()
 transactions = []
 
-block = Block(transactions, time(), 0)
+block = Block(1, transactions, time())
 chain.addBlock(block)
 
-block = Block(transactions, time(), 1)
+block = Block(2, transactions, time())
 chain.addBlock(block)
 
-block = Block(transactions, time(), 2)
+block = Block(3, transactions, time())
 chain.addBlock(block)
 
 pp = pprint.PrettyPrinter(indent=4)
