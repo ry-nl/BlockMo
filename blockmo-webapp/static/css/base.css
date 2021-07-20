@@ -1,3 +1,7 @@
-.nav-item {
-        padding: 0 1vw;
+.navbar-brand {
+        padding: 2vw;
+}
+
+.nav-link {
+        margin: 0 1.2vw;
 }

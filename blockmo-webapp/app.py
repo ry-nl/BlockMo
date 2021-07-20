@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 # database creation
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = '6ALc723hiM9mEJAr5t6'
 app.permanent_session_lifetime = timedelta(minutes=20)
 db = SQLAlchemy(app)
@@ -34,12 +35,35 @@ def home():
     user = None
     if 'user' in session:
         user = session['user']
-    return render_template('index.html', user=user)
+    return render_template('index.html', user=user, currentPage='home')
 
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    pass
+    user = None
+
+    if 'user' in session:
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User.query.filter_by(username=username).first()
+
+        if user: 
+            if user.password == password:
+                session['user'] = user.name
+                return redirect(url_for('home'))
+            else:
+                flash('Password is incorrect')
+                return render_template('login.html', currentPage='login')
+
+        flash('Username is incorrect or is not registered')
+        return render_template('login.html', currentPage='login')
+    else:
+        return render_template('login.html', currentPage='login')
+
 
 
 @app.route('/logout/')
@@ -68,7 +92,7 @@ def createAccount():
             else:
                 flash('Username taken, please choose another')
             # redirect to create account page
-            return render_template('createaccount.html', user=user)
+            return render_template('createaccount.html', user=user, currentPage='createaccount')
         # if new user, get remaining user info
         name = request.form['name']
         password = request.form['password']
@@ -77,14 +101,19 @@ def createAccount():
         # add user to session
         session['user'] = user.name
         # add user to database
-        db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except:
+            db.session.rollback()
+            print('error adding user to database')
+            return render_template('createaccount.html', user=user, currentPage='createaccount')
         # redirect to home if logged in
         return redirect(url_for('home'))
     # if page is pulled up via navbar
     else:
         # render create account page
-        return render_template('createaccount.html', user=user)
+        return render_template('createaccount.html', user=user, currentPage='createaccount')
 
 
 if __name__ == '__main__':
