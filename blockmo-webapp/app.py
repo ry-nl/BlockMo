@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, request, url_for, session, f
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 
+
 app = Flask(__name__)
 
 # database creation
@@ -115,6 +116,10 @@ def createAccount():
         # render create account page
         return render_template('createaccount.html', user=user, currentPage='createaccount')
 
+
+@app.route('/viewDB/')
+def viewDB():
+    return render_template('viewDB.html', currentPage='viewDB', values=User.query.all())
 
 if __name__ == '__main__':
     app.run(debug=True)
