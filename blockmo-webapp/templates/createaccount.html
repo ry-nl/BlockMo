@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel='stylesheet' href='{{ url_for('static', filename='css/createaccount.css')}}' />
+{% endblock %}
+
+
+{% block body %}
+
+{% with messages = get_flashed_messages() %}
+        {% if messages %}
+                {% for message in messages %}
+                        <p>{{message}}</p>
+                {% endfor %}
+        {% endif %}
+{% endwith %}
+
+<div className='create-account'>
+        <h1>Create Account</h1>
+        <form action='#' method='POST'>
+                name
+                <input type='text' name='name' /><hr>
+                email
+                <input type='text' name='email' /><hr>
+                username
+                <input type='text' name='username' /><hr>
+                password
+                <input type='password' name='password' /><hr>
+                <input type='submit' value='create account' />
+        </form>
+</div>
+{% endblock %}
