@@ -25,11 +25,13 @@
                                 <div class='navbar-nav'> 
                                         <a class="nav-link {{'active' if currentPage == 'home'}}" aria-current='currentPage' href={{ url_for('home') }}>Home</a>
 
-                                        <a class="nav-link {{'active' if currentPage == 'send'}} {{'disabled' if not user}}" href='#'>Send</a>
+                                        <a class="nav-link {{'active' if currentPage == 'send'}} {{'disabled' if not user}}" href={{ url_for('send') }}>Send</a>
 
-                                        <a class="nav-link {{'active' if currentPage == 'transactions'}} {{'disabled' if not user}}" href='#'>Transactions</a>
+                                        <a class="nav-link {{'active' if currentPage == 'transactions'}} {{'disabled' if not user}}" href={{ url_for('transactions') }}>Transactions</a>
 
-                                        <a class="nav-link {{'active' if currentPage == 'transactions'}} {{'disabled' if not user}}" href='#'>Chain</a>
+                                        <a class="nav-link {{'active' if currentPage == 'chain'}} {{'disabled' if not user}}" href='#'>Chain</a>
+
+                                        <a class="nav-link {{'active' if currentPage == 'viewDB'}}" href={{ url_for('viewDB') }}>ViewDB</a>
 
                                         {% if not user %}
                                                 <a class="nav-link {{'active' if currentPage == 'login'}}" href={{ url_for('login') }}>Log in</a>

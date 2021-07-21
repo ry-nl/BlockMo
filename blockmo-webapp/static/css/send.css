@@ -1,0 +1,27 @@
+h1 {
+        padding: 20px 20px;
+}
+
+form {
+        line-height: 2;
+        padding: 0 20px;
+}
+
+label {
+        display: inline-block;
+        width: 150px;
+        text-align: right;
+        padding: 20px 20px;
+}
+
+#category {
+        display: inline-block;
+        width: 300px;
+}
+
+#submit {
+        position: absolute;
+        left: 150px;
+        padding: 0 20px;
+        margin: 20px 20px;
+}

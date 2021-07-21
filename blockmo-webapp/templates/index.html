@@ -9,7 +9,7 @@
 {% block body %}
 
 {% if user %}
-<h1>Welcome {{user}}</h1>
+<h1>Welcome {{user['name']}}</h1>
 {% else %}
 <h1>BlockMo</h1>
 {% endif %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel='stylesheet' href='{{ url_for('static', filename='css/send.css')}}' />
+{% endblock %}
+
+
+{% block body %}
+
+{% with messages = get_flashed_messages() %}
+        {% if messages %}
+                {% for message in messages %}
+                        <p>{{message}}</p>
+                {% endfor %}
+        {% endif %}
+{% endwith %}
+
+<div className='send'>
+        <h1>Send Money</h1>
+        <form action='#' method='POST'>
+                <label>recipient</label>
+                <input id='category' type='text' name='recipient' /><br>
+                <label>amount</label>
+                <input id='category' type='text' name='amount' /><br>
+				<label>sender</label>
+                <input id='category' disabled type='text' name='sender' value={{user['username']}} /><br>
+				<label>public key</label>
+				<input id='category' disabled type='text' name='public key' value='12345678' /><br>
+                <input id='submit' type='submit' value='send' />
+        </form>
+</div>
+{% endblock %}
