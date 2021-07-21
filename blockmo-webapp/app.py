@@ -73,7 +73,7 @@ def send():
     user = getUserFromSession()
 
     if not user:
-        redirect(url_for('login'))
+        return redirect(url_for('login'))
 
     if request.method == 'POST':
         recipientUsername = request.form['recipient']
@@ -127,7 +127,7 @@ def transactions():
     userData = getUserFromSession()
 
     if not userData:
-        redirect(url_for('login'))
+        return redirect(url_for('login'))
 
     user = User.query.filter_by(username=userData['username']).first()
     userTransactionsList = user.transactions
@@ -216,7 +216,6 @@ def createAccount():
 
 @app.route('/viewDB/')
 def viewDB():
-<<<<<<< HEAD
     user = getUserFromSession()
     return render_template('viewDB.html', user=user, currentPage='viewDB', values=User.query.all())
 
@@ -234,9 +233,6 @@ def getLocalTime():
     dateString = '/'.join([str(timeStruct[1]), str(timeStruct[2]), str(timeStruct[0])[2:]])
     return timeString + ' - ' + dateString
 
-=======
-    return render_template('viewDB.html', currentPage='viewDB', values=User.query.all())
->>>>>>> 9071423196e249e59c9614d74db73a378a6cd003
 
 if __name__ == '__main__':
     app.run(debug=True)
