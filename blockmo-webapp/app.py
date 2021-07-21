@@ -4,6 +4,7 @@ from datetime import timedelta
 from time import time, localtime
 import lib.blockchain as blockchain
 
+
 app = Flask(__name__)
 
 # database creation
@@ -215,6 +216,7 @@ def createAccount():
 
 @app.route('/viewDB/')
 def viewDB():
+<<<<<<< HEAD
     user = getUserFromSession()
     return render_template('viewDB.html', user=user, currentPage='viewDB', values=User.query.all())
 
@@ -232,6 +234,9 @@ def getLocalTime():
     dateString = '/'.join([str(timeStruct[1]), str(timeStruct[2]), str(timeStruct[0])[2:]])
     return timeString + ' - ' + dateString
 
+=======
+    return render_template('viewDB.html', currentPage='viewDB', values=User.query.all())
+>>>>>>> 9071423196e249e59c9614d74db73a378a6cd003
 
 if __name__ == '__main__':
     app.run(debug=True)
