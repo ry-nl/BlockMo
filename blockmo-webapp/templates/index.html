@@ -1,17 +1,33 @@
 {% extends 'base.html' %}
 
 {% block head %}
-
+<link rel='stylesheet' href="{{ url_for('static', filename='css/index.css')}}" />
 {% endblock %}
 
 
 
 {% block body %}
 
-{% if user %}
-<h1>Welcome {{user['name']}}</h1>
-{% else %}
-<h1>BlockMo</h1>
-{% endif %}
+<div class='content'>
 
+	<div id="particles-js"></div>
+
+	{% if user %}
+	<h1 class='title'>Welcome, {{user['name']}}</h1>
+
+	{% else %}
+	<h1 class='title'>BlockMo</h1>
+
+	{% endif %}
+
+	<div class='blocks'>
+		<div class='block'></div>
+		<div class='block'></div>
+		<div class='block'></div>
+	</div>
+
+</div>
+
+<script src='https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js'></script>
+<script src="{{ url_for('static', filename='js/stars.js')}}" ></script>
 {% endblock %}
