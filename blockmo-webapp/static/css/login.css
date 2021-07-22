@@ -1,3 +1,11 @@
+.login {
+	font-family: 'Karla', sans-serif;
+	color: white;
+	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
+	height: 94vh;
+	overflow: auto;
+}
+
 h1 {
         padding: 20px 20px;
 }
@@ -7,7 +15,7 @@ form {
         padding: 0 20px;
 }
 
-label {
+#credential {
         display: inline-block;
         width: 100px;
         text-align: right;
