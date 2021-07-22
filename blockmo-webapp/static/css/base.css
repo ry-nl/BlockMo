@@ -1,7 +1,18 @@
+body {
+	font-family: 'Karla', sans-serif;
+}
+
 .navbar-brand {
-        padding: 2vw;
+	font-family: 'Karla', sans-serif;
+        padding: 0 2vw;
+}
+
+.navbar-brand label {
+        font-size: 1.3em; 
 }
 
 .nav-link {
+	font-family: 'Karla', sans-serif;
+        font-size: 1.2em;
         margin: 0 1.2vw;
 }

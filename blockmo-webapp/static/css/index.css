@@ -1,8 +1,8 @@
 .content {
 	position: relative;
-	background-color: rgb(54, 55, 61);
+	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
 	width: 100%;
-	height: 94.8vh;
+	height: 94vh;
 	overflow: hidden;
 }
 
@@ -15,13 +15,13 @@
 	text-align: center;
 
 	color: white;
-	font-weight: 300;
+	font-weight: 400;
 	font-size: 6em;
 
 	z-index: 100;
 }
 
-.blocks {
+.blocks1 {
 	position: absolute;
 	display: block;
 
@@ -34,14 +34,58 @@
 
 .block {
 	margin: 30px 0;
+
 	width: 200px;
 	height: 200px;
-	background-color:rgb(39, 40, 46)
+
+	background-color:rgb(24, 24, 26)
 }
+
+.blocks2 {
+	position: absolute;
+	display: block;
+
+	width: 10%;
+	height: 100%;
+
+	top: 55vh;
+	left: 60vw;
+}
+
+/* .triangles {
+	position: absolute;
+
+	width: 15%;
+	height: 15%;
+}
+
+.triangle1 {
+	position: relative;
+
+	top: 15vh;
+	left: 5vw;
+
+	border-top: 10vw solid transparent;
+	border-bottom: 10vw solid transparent;
+  
+	border-left: 10vw solid rgb(39, 40, 46);
+}
+
+.triangle2 {
+	position: relative;
+
+	top: 3vh;
+	left: -1vw;
+
+	border-top: 6vw solid transparent;
+	border-bottom: 6vw solid transparent;
+  
+	border-right: 6vw solid rgb(39, 40, 46);
+} */
 
 #particles-js {
   position: absolute;
-  
+
   width: 100%;
   height: 100%;
 

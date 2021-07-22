@@ -15,17 +15,17 @@
         {% endif %}
 {% endwith %}
 
-<div className='send'>
+<div class='send'>
         <h1>Send Money</h1>
         <form action='#' method='POST'>
-                <label>recipient</label>
+                <label id='transaction-info'>recipient</label>
                 <input id='category' type='text' name='recipient' /><br>
-                <label>amount</label>
+                <label id='transaction-info'>amount</label>
                 <input id='category' type='text' name='amount' /><br>
-				<label>sender</label>
+                <label id='transaction-info'>sender</label>
                 <input id='category' disabled type='text' name='sender' value={{user['username']}} /><br>
-				<label>public key</label>
-				<input id='category' disabled type='text' name='public key' value='12345678' /><br>
+                <label id='transaction-info'>public key</label>
+                <input id='category' disabled type='text' name='public key' value='12345678' /><br>
                 <input id='submit' type='submit' value='send' />
         </form>
 </div>

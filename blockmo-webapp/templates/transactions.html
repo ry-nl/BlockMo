@@ -15,14 +15,14 @@
         {% endif %}
 {% endwith %}
 
-<div className='transactions'>
+<div class='transactions'>
         <h1>Transaction History</h1>
 		{% if transactions %}
 			{% for transaction in transactions %}
 			<div className='transaction-card' id='transaction-card'>
-				<label>Sender:</label><h3>{{transaction['sender']}}</h3><br>
-				<label>Recipient:</label><h3>{{transaction['recipient']}}</h3><br>
-				<label>Amount:</label><h3>{{transaction['amount']}}</h3><br>
+				<label id='transaction-info'>Sender:</label><h3>{{transaction['sender']}}</h3><br>
+				<label id='transaction-info'>Recipient:</label><h3>{{transaction['recipient']}}</h3><br>
+				<label id='transaction-info'>Amount:</label><h3>{{transaction['amount']}}</h3><br>
 				<p>{{transaction['time']}}</p>
 			</div>
 			{% endfor %}
