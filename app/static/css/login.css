@@ -1,4 +1,4 @@
-.create-account {
+.login {
 	font-family: 'Karla', sans-serif;
 	color: white;
 	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
@@ -17,7 +17,7 @@ form {
 
 #credential {
         display: inline-block;
-        width: 100px;
+        width: 120px;
         text-align: right;
         padding: 20px 20px;
 }

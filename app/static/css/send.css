@@ -1,0 +1,48 @@
+.send {
+	font-family: 'Karla', sans-serif;
+
+	color: white;
+	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
+
+	height: 94vh;
+
+	overflow: auto;
+}
+
+h1 {
+	text-align: center;
+	padding-top: 50px;
+	padding-bottom: 0;
+}
+
+.form-div {
+	width: 30%;
+	margin: 0 auto;
+	text-align: left;
+}
+
+form {        
+	line-height: 2;
+	padding: 50px 20px;
+}
+
+#transaction-info {
+	display: inline-block;
+
+	width: 150px;
+
+	padding: 20px 20px;
+
+	text-align: right;
+}
+
+#category {
+	display: inline-block;
+	width: 300px;
+}
+
+#submit {
+	padding: 0 20px;
+	margin: 20px 20px;
+	margin-left: 155px;
+}

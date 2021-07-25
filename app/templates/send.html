@@ -7,17 +7,18 @@
 
 {% block body %}
 
-{% with messages = get_flashed_messages() %}
-        {% if messages %}
-                {% for message in messages %}
-                        <p>{{message}}</p>
-                {% endfor %}
-        {% endif %}
-{% endwith %}
 
 <div class='send'>
+        {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                        {% for message in messages %}
+                                <p>{{message}}</p>
+                        {% endfor %}
+                {% endif %}
+        {% endwith %}
         <h1>Send Money</h1>
-        <form action='#' method='POST'>
+		<div class='form-div'>
+			<form action='#' method='POST'>
                 <label id='transaction-info'>recipient</label>
                 <input id='category' type='text' name='recipient' /><br>
                 <label id='transaction-info'>amount</label>
@@ -27,6 +28,7 @@
                 <label id='transaction-info'>public key</label>
                 <input id='category' disabled type='text' name='public key' value='12345678' /><br>
                 <input id='submit' type='submit' value='send' />
-        </form>
+			</form>
+		</div>
 </div>
 {% endblock %}

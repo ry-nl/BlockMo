@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel='stylesheet' href='{{ url_for('static', filename='css/viewaccount.css')}}' />
+{% endblock %}
+
+
+{% block body %}
+<div class='account'>
+		{% with messages = get_flashed_messages() %}
+				{% if messages %}
+						{% for message in messages %}
+								<p>{{message}}</p>
+						{% endfor %}
+				{% endif %}
+		{% endwith %}
+		<h1>{{user['name']}}'s account</h1>
+		<div class='account-details'>
+				<label id='user-info'>Name :</label><h2>{{user['name']}}</h2><br>
+				<label id='user-info'>Username :</label><h2>{{user['username']}}</h2><br>
+				<label id='user-info'>Email :</label><h2>{{user['email']}}</h2><br>
+				<label id='user-info'>Balance :</label><h2>{{user['balance']}}</h2>
+		</div>
+</div>
+{% endblock %}
