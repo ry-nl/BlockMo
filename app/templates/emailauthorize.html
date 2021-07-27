@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel='stylesheet' href='{{ url_for('static', filename='css/emailauthorize.css')}}' />
+{% endblock %}
+
+
+{% block body %}
+
+
+
+<div class='authorize'>
+        <h1>Email Authorization</h1>
+        <form action='#' method='POST'>
+                <label id='credential'>Email Authorization Key</label>
+                <input id='category' type='text' name='Email Authorization Key' /><br>
+                <input id='submit' type='submit' value=submit' />
+        </form>
+</div>
+{% endblock %}
