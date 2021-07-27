@@ -25,3 +25,11 @@ class Block:
 		while self.hash[0:difficulty] != solveRequirement:
 			self.nonce += 1
 			self.hash = self.blockHash()
+	
+
+	def isValid(self):
+		for transaction in self.transactions:
+			if not transaction.isValid():
+				return False
+
+		return True

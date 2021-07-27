@@ -1,5 +1,5 @@
-from block import Block
-from transaction import Transaction
+from .block import *
+from .transaction import *
 from time import time
 from Crypto.PublicKey import RSA
 
@@ -16,18 +16,15 @@ class BlockChain:
 		return Block(0, [], time())
 		
 
-	def makeTransaction(self, sender, recipient, amount, senderKey1, senderKey2):
-		if not sender or not recipient or not amount:
+	def makeTransaction(self, key, senderKey, recipientKey, amount):
+		if not senderKey or not recipientKey or not amount:
 			return False
 
-		senderKey1_encoded = senderKey1.encode('ASCII')
-		senderKey2_encoded = senderKey2.encode('ASCII')
+		senderKey_encoded = senderKey.export_key('PEM')
+		recipientKey_encoded = recipientKey.export_key('PEM')
 
-		key1 = RSA.importKey(senderKey1_encoded)
-		key2 = RSA.importKey(senderKey2_encoded)
-
-		transaction = Transaction(sender, recipient, amount)
-		transaction.signTransaction(key1, key2)
+		transaction = Transaction(senderKey_encoded, recipientKey_encoded, amount)
+		transaction.signTransaction(key)
 
 		if not transaction.isValid():
 			print('Invalid Transaction')
@@ -67,6 +64,14 @@ class BlockChain:
 		minerReward = Transaction('System', rewardAddress, self.miningReward)
 
 		self.unfulfilledTransactions = [minerReward]
+
+
+	def isValid(self):
+		for block in self.chain:
+			if not block.isValid():
+				return False
+
+		return True
 
 
 	def encodeJSON(self):
