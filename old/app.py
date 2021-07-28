@@ -5,7 +5,8 @@ import smtplib
 import secrets
 from datetime import timedelta
 from time import localtime
-# import lib.blockchain as blockchain
+from src.chain import *
+from src.genkey import genKey
 
 # ---------- APP CONFIG ----------
 
@@ -21,11 +22,12 @@ db = SQLAlchemy(app)
 
 # USER CLASS
 class User(db.Model):
-    name = db.Column(db.String(20), nullable=False)
-    username = db.Column(db.String(20), primary_key=True)
-    password = db.Column(db.String(30), nullable=False)
-    email = db.Column(db.String(30), primary_key=True) # email as primary key
+    name = db.Column(db.String(30), nullable=False)
+    username = db.Column(db.String(30), primary_key=True)
+    password = db.Column(db.String(40), nullable=False)
+    email = db.Column(db.String(50), primary_key=True) # email as primary key
     balance = db.Column(db.Integer, nullable=False)
+    # publicKey = db.Column(db.String(500), nullable=False)
     transactions = db.relationship('Transaction', backref='party', lazy=True)
 
     def __init__(self, name, username, password, email):
@@ -33,6 +35,7 @@ class User(db.Model):
         self.username = username
         self.password = password
         self.email = email
+        # self.publicKey = genKey()
         self.balance = 50
 
     def __repr__(self):

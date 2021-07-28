@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel='stylesheet' href="{{ url_for('static', filename='css/index.css')}}" />
+{% endblock %}
+
+
+
+{% block body %}
+
+<div class='content'>
+
+	<div id="particles-js"></div>
+
+	{% if user %}
+	<h1 class='title'>■Welcome, {{user['name']}}</h1>
+
+	{% else %}
+	<h1 class='title'>■BlockMo</h1>
+
+	{% endif %}
+
+	<div class='blocks1'>
+		<div class='block'></div>
+		<div class='block'></div>
+		<div class='block'></div>
+	</div>
+
+	<div class='blocks2'>
+		<div class='block'></div>
+		<div class='block'></div>
+	</div>
+
+	<div class='blocks3'>
+		<div class='block'></div>
+		<div class='block'></div>
+		<div class='block'></div>
+	</div>
+
+	<!-- <div class='triangles'>
+		<div class='triangle1'></div>
+		<div class='triangle2'></div>
+	</div> -->
+
+</div>
+
+<script src='https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js'></script>
+<script src="{{ url_for('static', filename='js/stars.js')}}" ></script>
+{% endblock %}

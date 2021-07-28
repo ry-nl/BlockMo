@@ -1,7 +1,9 @@
 from flask import render_template, redirect, request, url_for, session, flash
-from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-from .models import app, User, Transaction
+from app.helpers import *
+from app import app
+from app import db
+from app.models import User, Transaction
 # import lib.blockchain as blockchain
 
 # HOME ROUTE
@@ -103,7 +105,7 @@ def login():
         # if the user exists
         if user: 
             # check if password matches hashed password
-            if bcrypt.check_password(password.encode('utf-8'), user.password):
+            if bcrypt.checkpw(password.encode('utf-8'), user.password):
                 # add user to session
                 session['user'] = user.dictify()
                 return redirect(url_for('home'))
@@ -161,6 +163,7 @@ def createAccount():
             db.session.commit()
         except:
             db.session.rollback()
+            session.pop('user', None)
             flash('Error adding user to database')
             return render_template('createaccount.html', user=user, currentPage='createaccount')
         # redirect to home if logged in
@@ -170,18 +173,118 @@ def createAccount():
         # render create account page
         return render_template('createaccount.html', user=user, currentPage='createaccount')
 
-# TEST FUNCTION TO VIEW DATABASE
+# @app.route('/createaccount/', methods=['GET', 'POST'])
+# def createAccount():
+#     # if a user is already logged in redirect to home
+#     if getUserFromSession():
+#         return redirect(url_for('home'))
+#     # if form is submitted
+#     if request.method == 'POST':
+#         # get username and email from sign up form
+#         username = request.form['username']
+#         email = request.form['email']
+#         # find username and email from database
+#         userByUsername = User.query.filter_by(username=username).first()
+#         userByEmail = User.query.filter_by(email=email).first()
+#         # if exist in database, flash message and redirect to page
+#         if userByUsername or userByEmail:
+#             # since email is primary key, if email already exists, ask to log in
+#             if userByEmail:
+#                 flash('Email already registered, please log in')
+#             # if username already exists, ask to choose another
+#             else:
+#                 flash('Username taken, please choose another')
+#             # redirect to create account page
+#             return render_template('createaccount.html', user=user, currentPage='createaccount')
+#         # if new user, get remaining user info
+#         name = request.form['name']
+#         password = request.form['password']
+#         # hash the password to be stored
+#         hashedPassword = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+#         # create user
+#         user = User(name, username, hashedPassword, email)
+#         session['unverifiedUser'] = user.dictify()
+#         session['unverifiedUserPW'] = hashedPassword
+#         return redirect(url_for('emailAuthorize'))
+#     # if page is pulled up
+#     else:
+#         # user's email has been verified
+#         if session.get('isVerified', None):
+#             # add user to session
+#             session['user'] = session['unverifiedUser']
+#             # create user object to be stored in database
+#             user = User(session['user']['name'], session['user']['username'], session['unverifiedUserPW'], session['user']['email'])
+#             # remove all sensitive and temporary data from the session
+#             session.pop('isVerified', None)
+#             session.pop('unverifiedUser', None)
+#             session.pop('unverifiedUserPW', None)
+#             # add user to database
+#             try:
+#                 db.session.add(user)
+#                 db.session.commit()
+#             except:
+#                 db.session.rollback()
+#                 flash('Error adding user to database')
+#                 return render_template('createaccount.html', currentPage='createaccount')
+#             # redirect to home if logged in
+#             return redirect(url_for('home'))
+#         # user's email has not yet been verified
+#         else:
+#             return render_template('createaccount.html', currentPage='createaccount')
+
+# # AUTHORIZE EMAIL ROUTE
+# @app.route('/emailauthorize/', methods = ['POST', 'GET'])
+# def emailAuthorize():
+    
+#     if not session.get('unverifiedUser', None):
+#         return redirect(url_for('home'))
+
+#     if request.method == 'POST':
+        
+#         userToken = request.form['Email Authorization Key']
+#         if userToken == session['userAuthorKey']:
+#             session.pop('userAuthorKey', None)
+
+#             session['isVerified'] = True
+#             return redirect(url_for('createAccount'))
+#         else:
+#             return render_template('emailauthorize.html', currentPage='emailauthorize')
+#     else:
+#         #email log in to send to user
+#         sender = "testDummy2113@gmail.com"
+#         receiver =  session['unverifiedUser']['email']
+#         password = "throwuponmybal"
+#         subject = "BLOCKMO AUTHORIZATION KEY"
+#         authenticationEmail = secrets.token_hex(3)
+#         session['userAuthorKey'] = authenticationEmail
+#         body = "Case sensitive authorization key: " + authenticationEmail
+#         #header
+#         message = f"""From: {sender}
+#         To: {receiver}
+#         Subject: {subject}\n
+#         {body}
+#         """
+#         server = smtplib.SMTP("smtp.gmail.com", 587)
+#         server.starttls()
+#         try:
+#             server.login(sender, password)
+#             server.sendmail(sender, receiver, message)
+#         except smtplib.SMTPAuthenticationError:
+#             pass
+#         return render_template('emailauthorize.html', currentPage='emailauthorize')
+
+# VIEW ACCOUNT ROUTE
+@app.route('/viewaccount/')
+def viewaccount():
+    user = getUserFromSession()
+
+    if not user:
+        return redirect(url_for('login'))
+
+    return render_template('viewaccount.html', user=user, currentPage='viewaccount')
+
+# TEMPORARY ROUTE TO VIEW DATABASE
 @app.route('/viewDB/')
 def viewDB():
     user = getUserFromSession()
     return render_template('viewDB.html', user=user, currentPage='viewDB', values=User.query.all())
-
-# HELPER FUNCTION TO GET USER FROM SESSION
-def getUserFromSession():
-    if 'user' in session:
-        return session['user']
-    else:
-        return None
-
-if __name__ == '__main__':
-    app.run(debug=True)

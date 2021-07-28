@@ -1,6 +1,14 @@
 from time import localtime
+from app.routes import session
 
-# HELPER FUNCTION TO GET LOCAL TIME
+# GET USER FROM SESSION HELPER 
+def getUserFromSession():
+    if 'user' in session:
+        return session['user']
+    else:
+        return None
+
+# GET LOCAL TIME HELPER
 def getLocalTime():
     timeStruct = localtime()
     timeString = ':'.join([str(timeStruct[3]), str(timeStruct[4]).zfill(2)])
