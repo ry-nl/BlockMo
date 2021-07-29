@@ -7,23 +7,31 @@
 
 {% block body %}
 <div class='transactions'>
-		{% with messages = get_flashed_messages() %}
-				{% if messages %}
-						{% for message in messages %}
-								<p>{{message}}</p>
-						{% endfor %}
-				{% endif %}
-		{% endwith %}
-		<h1>Transaction History</h1>
-		{% if transactions %}
-				{% for transaction in transactions %}
-						<div className='transaction-card' id='transaction-card'>
-								<label id='transaction-info'>Sender :</label><h3>{{transaction['sender']}}</h3><br>
-								<label id='transaction-info'>Recipient :</label><h3>{{transaction['recipient']}}</h3><br>
-								<label id='transaction-info'>Amount :</label><h3>{{transaction['amount']}}</h3><br>
-								<p>{{transaction['time']}}</p>
-						</div>
-				{% endfor %}
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<p>{{message}}</p>
+			{% endfor %}
 		{% endif %}
+	{% endwith %}
+	<h1>Transaction History</h1>
+	{% if transactions %}
+		{% for transaction in transactions %}
+			<div className='transaction-card' id='transaction-card'>
+				<label id='transaction-info'>Sender :</label><h3>{{transaction['sender']}}</h3><br>
+				<label id='transaction-info'>Recipient :</label><h3>{{transaction['recipient']}}</h3><br>
+				<label id='transaction-info'>Amount :</label><h3>{{transaction['amount']}}</h3><br>
+				<label id='transaction-info'>Status :</label>
+				<h3>
+					{% if transaction['validated'] %}	
+						Validated
+					{% else %}
+						Processing
+					{% endif %}
+				</h3>
+				<p>{{transaction['time']}}</p>
+			</div>
+		{% endfor %}
+	{% endif %}
 </div>
 {% endblock %}

@@ -21,5 +21,8 @@
 				<label id='user-info'>Email :</label><h2>{{user['email']}}</h2><br>
 				<label id='user-info'>Balance :</label><h2>{{user['balance']}}</h2>
 		</div>
+		<form class='delete-account' action="{{ url_for('deleteAccount') }}" method='POST'>
+			<input id='del-acc' type='submit' value='delete account' >
+		</form>
 </div>
 {% endblock %}

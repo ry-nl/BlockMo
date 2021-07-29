@@ -1,3 +1,4 @@
+from app.src.genkey import genKey
 from app.helpers import getLocalTime
 from app import db
 
@@ -7,7 +8,7 @@ class User(db.Model):
 	password = db.Column(db.String(40), nullable=False)
 	email = db.Column(db.String(50), primary_key=True) # email as primary key
 	balance = db.Column(db.Integer, nullable=False)
-	# publicKey = db.Column(db.String(500), nullable=False)
+	publicKey = db.Column(db.String(500), nullable=False)
 	transactions = db.relationship('Transaction', backref='party', lazy=True)
 
 	def __init__(self, name, username, password, email):
@@ -15,14 +16,14 @@ class User(db.Model):
 		self.username = username
 		self.password = password
 		self.email = email
-		# self.publicKey = genKey()
+		self.publicKey = genKey(self.username)
 		self.balance = 50
 
 	def __repr__(self):
 		return f'User {self.username} {self.name} {self.email}'
 
 	def dictify(self):
-		return {'name': self.name, 'username': self.username, 'email': self.email, 'balance': self.balance}
+		return {'name': self.name, 'username': self.username, 'email': self.email, 'balance': self.balance, 'publicKey': self.publicKey}
 
 # TRANSACTION CLASS
 class Transaction(db.Model):
@@ -31,6 +32,7 @@ class Transaction(db.Model):
 	recipient = db.Column(db.String(20), nullable=False)
 	amount = db.Column(db.Integer, nullable=False)
 	time = db.Column(db.String(50), nullable=False)
+	validated = db.Column(db.Boolean, nullable=False)
 	userId = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
 
 	def __init__(self, sender, recipient, amount, userId):
@@ -38,10 +40,11 @@ class Transaction(db.Model):
 		self.recipient = recipient
 		self.amount = amount
 		self.time = getLocalTime()
+		self.validated = False
 		self.userId = userId
 	
 	def __repr__(self):
 		return f'Transaction from {self.sender} to {self.recipient} of amount {self.amount} at {self.time}'
 
 	def dictify(self):
-		return {'id': self.id, 'sender': self.sender, 'recipient': self.recipient, 'amount': self.amount, 'time': self.time}
+		return {'id': self.id, 'sender': self.sender, 'recipient': self.recipient, 'amount': self.amount, 'time': self.time, 'validated': self.validated}

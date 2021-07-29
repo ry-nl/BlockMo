@@ -1,8 +1,8 @@
 from flask import render_template, redirect, request, url_for, session, flash
+import os
 import bcrypt
+from app import app, db
 from app.helpers import *
-from app import app
-from app import db
 from app.models import User, Transaction
 # import lib.blockchain as blockchain
 
@@ -46,8 +46,10 @@ def send():
         if int(transactionAmount) <= 0:
             flash('Enter valid amount to be sent')
             return render_template('send.html', user=user, currentPage='send')
-        # TEMPORARY
-        # edit balances
+
+        # recipientKey = recipient.publicKey
+        # senderKey = recipient.privateKey
+
         sender.balance -= int(transactionAmount)
         recipient.balance += int(transactionAmount)
         # create transaction objects
@@ -88,7 +90,7 @@ def transactions():
         userTransactions.insert(0, transaction.dictify())
     # render transaction page and display user transaction history
     return render_template('transactions.html', user=userData, transactions=userTransactions, currentPage='transactions')
-    
+
 # LOG IN ROUTE
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -132,9 +134,18 @@ def createAccount():
     user = None
     # if form is submitted
     if request.method == 'POST':
-        # get username and email from sign up form
+        # get user info from form
         username = request.form['username']
         email = request.form['email']
+        name = request.form['name']
+        password = request.form['password']
+
+        if not username or not email or not name or not password:
+            flash('One or more fields missing')
+            return render_template('createaccount.html', user=user, currentPage='createaccount')
+        
+        # if len(username) < 3 or not email.endswith('.com') or '@' not in email or len(name) < 2 or len(password) < 6:
+
         # find username and email from database
         userByUsername = User.query.filter_by(username=username).first()
         userByEmail = User.query.filter_by(email=email).first()
@@ -148,9 +159,6 @@ def createAccount():
                 flash('Username taken, please choose another')
             # redirect to create account page
             return render_template('createaccount.html', user=user, currentPage='createaccount')
-        # if new user, get remaining user info
-        name = request.form['name']
-        password = request.form['password']
         # hash the password to be stored
         hashedPassword = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
         # create user
@@ -172,6 +180,30 @@ def createAccount():
     else:
         # render create account page
         return render_template('createaccount.html', user=user, currentPage='createaccount')
+
+
+@app.route('/deleteaccount/', methods=['POST'])
+def deleteAccount():
+    userData = getUserFromSession()
+    if not userData:
+        return redirect(url_for('home'))
+
+    user = User.query.filter_by(username=userData['username']).first()
+
+    try:
+        db.session.delete(user)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        flash('Error removing user from database') 
+        return redirect(url_for('viewAccount'))
+
+    session.pop('user', None)
+    os.remove(f"app/wallets/{user.username}private.pem")
+    os.remove(f"app/wallets/{user.username}public.pem")
+    
+    return redirect(url_for('home'))
+
 
 # @app.route('/createaccount/', methods=['GET', 'POST'])
 # def createAccount():
@@ -275,7 +307,7 @@ def createAccount():
 
 # VIEW ACCOUNT ROUTE
 @app.route('/viewaccount/')
-def viewaccount():
+def viewAccount():
     user = getUserFromSession()
 
     if not user:

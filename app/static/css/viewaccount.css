@@ -45,3 +45,12 @@ h2{
 
 	font-weight: 300;
 }
+
+.delete-account {
+	width: 40%;
+	margin: 0 auto;
+}
+
+#del-acc {
+	padding: 4px 20px;
+}

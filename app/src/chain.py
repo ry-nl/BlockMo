@@ -1,11 +1,11 @@
 from .block import *
 from .transaction import *
 from time import time
+import pickle
 from Crypto.PublicKey import RSA
 
 class BlockChain:
 	def __init__(self):
-		self.index = 1
 		self.chain = [self.genesisBlock()]
 		self.difficulty = 3
 		self.unfulfilledTransactions = []
@@ -86,8 +86,4 @@ class BlockChain:
 			chainJSON.append(blockJSON)
 
 		return chainJSON
-
-
-
-
 

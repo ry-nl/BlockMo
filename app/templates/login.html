@@ -6,16 +6,14 @@
 
 
 {% block body %}
-
-{% with messages = get_flashed_messages() %}
-        {% if messages %}
-                {% for message in messages %}
-                        <p>{{message}}</p>
-                {% endfor %}
-        {% endif %}
-{% endwith %}
-
 <div class='login'>
+        {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                        {% for message in messages %}
+                                <p>{{message}}</p>
+                        {% endfor %}
+                {% endif %}
+        {% endwith %}
         <h1>Log In</h1>
         <form action='#' method='POST'>
                 <label id='credential'>username</label>
