@@ -49,8 +49,13 @@ h2{
 .delete-account {
 	width: 40%;
 	margin: 0 auto;
+	-webkit-transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+	transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
 }
 
 #del-acc {
 	padding: 4px 20px;
+}
+#del-acc:hover {
+	box-shadow: 0 0 40px 40px #646161 inset;
 }

@@ -1,4 +1,5 @@
 .login {
+        text-align: center;
 	font-family: 'Karla', sans-serif;
 	color: white;
 	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
@@ -7,7 +8,7 @@
 }
 
 h1 {
-        padding: 20px 20px;
+        padding: 20px;
 }
 
 form {
@@ -28,8 +29,20 @@ form {
 }
 
 #submit {
-        position: absolute;
-        left: 100px;
+        text-align: left;
+        
+        left: 180px;
         padding: 0 20px;
         margin: 20px 20px;
+
+        -webkit-transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+         transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+        
+        #submit:hover {
+                box-shadow: 0 0 40px 40px #646161 inset;
+        }
+}
+
+#submit:hover {
+        box-shadow: 0 0 40px 40px #646161 inset;
 }
