@@ -1,5 +1,6 @@
 from time import localtime
 from app.routes import session
+from Crypto.PublicKey import RSA
 
 # GET USER FROM SESSION HELPER 
 def getUserFromSession():
@@ -7,6 +8,10 @@ def getUserFromSession():
         return session['user']
     else:
         return None
+
+# GET KEY FROM STRING
+def getPublicKey(keyString):
+    return RSA.import_key(keyString)
 
 # GET LOCAL TIME HELPER
 def getLocalTime():

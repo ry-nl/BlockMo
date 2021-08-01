@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel='stylesheet' href='{{ url_for('static', filename='css/mine.css')}}' />
+{% endblock %}
+
+
+{% block body %}
+<div class='transactions'>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<p>{{message}}</p>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+	<h1>Pending Transactions</h1>
+	<div class='pending-transactions'>
+		<table>
+			<tr>
+				<th>Sender</th>
+				<th>Recipient</th>
+				<th>Amount</th>
+				<th>Time</th>
+			</tr>
+			{% if unfulfilledTransactions %}
+				{% for transaction in unfulfilledTransactions %}
+					<tr>
+						<td>{{transaction['sender']}}</td>
+						<td>{{transaction['recipient']}}</td>
+						<td>{{transaction['amount']}}</td>
+						<td>{{transaction['time']}}</td>
+					</tr>
+				{% endfor %}
+			{% endif %}
+		</table>
+		<form class='mine-transactions' action="{{ url_for('mine') }}" method='POST'>
+			<input id='mine-trans' type='submit' value='mine transactions'>
+		</form>
+	</div>
+</div>
+{% endblock %}

@@ -1,10 +1,10 @@
-from flask import render_template, redirect, request, url_for, session, flash
+from flask import render_template, redirect, request, url_for, session, flash, jsonify
 import os
 import bcrypt
-from app import app, db
+from Crypto.PublicKey import RSA
+from app import app, db, blockchain
 from app.helpers import *
-from app.models import User, Transaction
-# import lib.blockchain as blockchain
+from app.models import User
 
 # HOME ROUTE
 @app.route('/')
@@ -12,6 +12,7 @@ def home():
     user = None
     if 'user' in session:
         user = session['user']
+    blockchain.createConsensus()
     return render_template('index.html', user=user, currentPage='home')
 
 # SEND ROUTE
@@ -47,49 +48,135 @@ def send():
             flash('Enter valid amount to be sent')
             return render_template('send.html', user=user, currentPage='send')
 
-        # recipientKey = recipient.publicKey
-        # senderKey = recipient.privateKey
+        recipientKey = recipient.publicKey
+        senderKey = sender.publicKey
 
-        sender.balance -= int(transactionAmount)
-        recipient.balance += int(transactionAmount)
+        # sender.balance -= int(transactionAmount)
+        # recipient.balance += int(transactionAmount)
         # create transaction objects
-        senderTransaction = Transaction(sender.username, recipient.username, int(transactionAmount), sender.username)
-        recipientTransaction = Transaction(sender.username, recipient.username, int(transactionAmount), recipient.username)
-        # add transactions to the database 
-        try:
-            db.session.add(senderTransaction)
-            db.session.add(recipientTransaction)
-            db.session.commit()
-        except:
-            db.rollback()
-            sender.balance += int(transactionAmount)
-            recipient.balance -= int(transactionAmount)
-            flash('Error adding transaction to database')
+        
+        # recipientTransaction = Transaction(sender, recipient, int(transactionAmount), recipient)
+        # senderTransaction = Transaction(sender, recipient, int(transactionAmount), sender)
+
+        if not blockchain.makeTransaction(RSA.import_key(open(f'app/wallets/{sender.username}private.pem').read()), sender.username, getPublicKey(senderKey), recipient.username, getPublicKey(recipientKey), int(transactionAmount)):
+            flash(f'Failed to create transaction')
             return render_template('send.html', user=user, currentPage='send')
+
+        # # add transactions to the database
+        # try:
+        #     db.session.add(senderTransaction)
+        #     db.session.add(recipientTransaction)
+        #     db.session.commit()
+        # except:
+        #     db.session.rollback()
+        #     flash('Error adding transaction to database')
+        #     return render_template('send.html', user=user, currentPage='send')
+
         # show success message and render send page
-        flash(f'Amount of {transactionAmount} has been successfully sent to {recipient.username}')
+        flash(f'Amount of {transactionAmount} is now pending to be sent to {recipient.username}')
         return render_template('send.html', user=user, currentPage='send')
     # if page is pulled up
     else:
+        blockchain.createConsensus()
         return render_template('send.html', user=user, currentPage='send')
+
+
+@app.route('/mine/', methods=['GET', 'POST'])
+def mine():
+    user = getUserFromSession()
+    if not user:
+        return redirect(url_for('login'))
+
+    # pendingTransactions = Transaction.query.filter_by(validated=False).all()
+    # print(pendingTransactions)
+
+    # originalPendingTransactions = []
+    # for transaction in pendingTransactions:
+    #     if transaction.original == True:
+    #         originalPendingTransactions.append(transaction)
+    # print(originalPendingTransactions)
+
+    # pendingTransactionData = []
+    # for transaction in originalPendingTransactions:
+    #     pendingTransactionData.append(transaction.dictify())
+
+    pendingTransactions = []
+    for transaction in blockchain.unfulfilledTransactions:
+        pendingTransactions.append(transaction.dictify())
+
+
+    if request.method == 'POST':
+        if not blockchain.mineTransactions(user['username'], getPublicKey(user['publicKey'])):
+            flash('Unable to mine transactions')
+            return render_template('mine.html', user=user, unfulfilledTransactions=pendingTransactions, currentPage='mine')
+
+        for transaction in pendingTransactions:
+            valid = True
+
+            sender = User.query.filter_by(username=transaction['sender']).first()
+            recipient = User.query.filter_by(username=transaction['recipient']).first()
+
+            if not sender or not recipient:
+                valid = False
+                if transaction['sender'] == 'System' and recipient:
+                    valid = True
+
+            if valid:
+                if transaction['sender'] != 'System':
+                    sender.balance = blockchain.getUserBalance(transaction['sender'])
+                    print(sender.balance)
+                recipient.balance = blockchain.getUserBalance(transaction['recipient'])
+                print(recipient.balance)
+
+                try:
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+
+        # for transaction in pendingTransactions:
+        #     print('RUN')
+        #     senderUsername = transaction['sender']
+        #     recipientUsername = transaction['recipient']
+
+        #     sender = User.query.filter_by(username=senderUsername).first()
+        #     recipient = User.query.filter_by(username=recipientUsername).first()
+
+        #     amount = int(transaction['amount'])
+
+        #     sender.balance -= amount
+        #     recipient.balance += amount
+            
+        #     try:
+        #         db.session.add(Transaction(sender, recipient, amount, sender))
+        #         db.session.add(Transaction(sender, recipient, amount, recipient))
+        #         db.session.commit()
+        #     except:
+        #         print('ISSUE')
+        #         db.session.rollback()
+
+        flash('Transactions successfully mined! Your reward has been added to the pending transactions')
+        return render_template('mine.html', user=user, currentPage='mine')
+    else:
+        blockchain.createConsensus()
+        return render_template('mine.html', user=user, unfulfilledTransactions=pendingTransactions, currentPage='mine')
 
 # TRANSACTIONS ROUTE
 @app.route('/transactions/')
 def transactions():
     # get user in session
-    userData = getUserFromSession()
+    user = getUserFromSession()
     # if user is not logged in, send to login page
-    if not userData:
+    if not user:
         return redirect(url_for('login'))
-    # get user from database
-    user = User.query.filter_by(username=userData['username']).first()
     # get user's transactions
-    userTransactionsList = user.transactions
     userTransactions = []
-    for transaction in userTransactionsList:
-        userTransactions.insert(0, transaction.dictify())
+    for block in blockchain.chain:
+        for transaction in block.transactions:
+            if transaction.sender == user['username'] or transaction.recipient == user['username']:
+                userTransactions.insert(0, transaction.dictify())
+    blockchain.createConsensus()
     # render transaction page and display user transaction history
-    return render_template('transactions.html', user=userData, transactions=userTransactions, currentPage='transactions')
+    return render_template('transactions.html', user=user, transactions=userTransactions, currentPage='transactions')
 
 # LOG IN ROUTE
 @app.route('/login/', methods=['GET', 'POST'])
@@ -110,6 +197,7 @@ def login():
             if bcrypt.checkpw(password.encode('utf-8'), user.password):
                 # add user to session
                 session['user'] = user.dictify()
+                blockchain.createConsensus()
                 return redirect(url_for('home'))
             else:
                 flash('Password is incorrect')
@@ -174,6 +262,9 @@ def createAccount():
             session.pop('user', None)
             flash('Error adding user to database')
             return render_template('createaccount.html', user=user, currentPage='createaccount')
+        
+        blockchain.createNode(request.url_root)
+
         # redirect to home if logged in
         return redirect(url_for('home'))
     # if page is pulled up
@@ -181,7 +272,7 @@ def createAccount():
         # render create account page
         return render_template('createaccount.html', user=user, currentPage='createaccount')
 
-
+# DELETE ACCOUNT ROUTE
 @app.route('/deleteaccount/', methods=['POST'])
 def deleteAccount():
     userData = getUserFromSession()
@@ -193,7 +284,8 @@ def deleteAccount():
     try:
         db.session.delete(user)
         db.session.commit()
-    except:
+    except Exception as e:
+        print(e)
         db.session.rollback()
         flash('Error removing user from database') 
         return redirect(url_for('viewAccount'))
@@ -305,13 +397,24 @@ def deleteAccount():
 #             pass
 #         return render_template('emailauthorize.html', currentPage='emailauthorize')
 
+# API ROUTE TO GET CHAIN IN JSON
+@app.route('/chain/info/')
+def getChain():
+    response = {
+        'chain': blockchain.encodeJSON(),
+        'length': len(blockchain.chain),
+    }
+    return jsonify(response), 200
+
 # VIEW ACCOUNT ROUTE
 @app.route('/viewaccount/')
 def viewAccount():
-    user = getUserFromSession()
+    userData = getUserFromSession()
 
-    if not user:
+    if not userData:
         return redirect(url_for('login'))
+
+    user = User.query.filter_by(username = userData['username']).first()
 
     return render_template('viewaccount.html', user=user, currentPage='viewaccount')
 

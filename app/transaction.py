@@ -1,15 +1,18 @@
-from time import time
+from time import localtime
 from Crypto.Signature import pkcs1_15
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 
 class Transaction:
-	def __init__(self, fromAddress, toAddress, amount):
+	def __init__(self, sender, fromAddress, recipient, toAddress, amount):
 		self.fromAddress = fromAddress
 		self.toAddress = toAddress
 
+		self.sender = sender
+		self.recipient = recipient
+
 		self.amount = amount
-		self.time = time()
+		self.time = self.getTransactionTime()
 
 		self.hash = self.transactionHash().hexdigest()
 		self.SHAhash = self.transactionHash()
@@ -29,8 +32,6 @@ class Transaction:
 			print('sign error')
 			return False
 
-		print(signKey.export_key())
-		
 		self.signature = pkcs1_15.new(signKey).sign(self.SHAhash)
 
 		return True
@@ -64,3 +65,14 @@ class Transaction:
 			return False	
 
 		return True
+
+
+	def getTransactionTime(self):
+		timeStruct = localtime()
+		timeString = ':'.join([str(timeStruct[3]), str(timeStruct[4]).zfill(2)])
+		dateString = '/'.join([str(timeStruct[1]), str(timeStruct[2]), str(timeStruct[0])[2:]])
+		return timeString + ' - ' + dateString
+
+	
+	def dictify(self):
+		return {'fromAddress': self.fromAddress, 'toAddress': self.toAddress, 'sender': self.sender, 'recipient': self.recipient, 'amount': self.amount, 'time': self.time}

@@ -14,15 +14,15 @@
 						{% endfor %}
 				{% endif %}
 		{% endwith %}
-		<h1>{{user['name']}}'s account</h1>
+		<h1>{{user.name}}'s account</h1>
 		<div class='account-details'>
-				<label id='user-info'>Name :</label><h2>{{user['name']}}</h2><br>
-				<label id='user-info'>Username :</label><h2>{{user['username']}}</h2><br>
-				<label id='user-info'>Email :</label><h2>{{user['email']}}</h2><br>
-				<label id='user-info'>Balance :</label><h2>{{user['balance']}}</h2>
+				<label id='user-info'>Name :</label><h2>{{user.name}}</h2><br>
+				<label id='user-info'>Username :</label><h2>{{user.username}}</h2><br>
+				<label id='user-info'>Email :</label><h2>{{user.email}}</h2><br>
+				<label id='user-info'>Balance :</label><h2>{{user.balance}}</h2>
 		</div>
 		<form class='delete-account' action="{{ url_for('deleteAccount') }}" method='POST'>
-			<input id='del-acc' type='submit' value='delete account' >
+			<input id='del-acc' type='submit' value='delete account'>
 		</form>
 </div>
 {% endblock %}

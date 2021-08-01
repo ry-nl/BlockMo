@@ -21,14 +21,6 @@
 				<label id='transaction-info'>Sender :</label><h3>{{transaction['sender']}}</h3><br>
 				<label id='transaction-info'>Recipient :</label><h3>{{transaction['recipient']}}</h3><br>
 				<label id='transaction-info'>Amount :</label><h3>{{transaction['amount']}}</h3><br>
-				<label id='transaction-info'>Status :</label>
-				<h3>
-					{% if transaction['validated'] %}	
-						Validated
-					{% else %}
-						Processing
-					{% endif %}
-				</h3>
 				<p>{{transaction['time']}}</p>
 			</div>
 		{% endfor %}
