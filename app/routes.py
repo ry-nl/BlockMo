@@ -3,7 +3,7 @@ import os
 import bcrypt
 from Crypto.PublicKey import RSA
 from app import app, db, blockchain
-from app.helpers import *
+from app.src.helpers import *
 from app.models import User
 
 # HOME ROUTE
