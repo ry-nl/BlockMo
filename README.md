@@ -13,3 +13,7 @@ The blockchain object data is not stored between runs for ease of testing, but u
 Please install all the dependencies needed before running this program!
 
 Thank you! :)
+
+**NOTE**
+Before running, please create a directory called 'wallets' under BlockMo/app/
+This directory will be used to store the public and private keys associated with each account
