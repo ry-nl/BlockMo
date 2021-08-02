@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel='stylesheet' href='{{ url_for('static', filename='css/chain.css')}}' />
+{% endblock %}
+
+
+{% block body %}
+<div class='chain'>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<p>{{message}}</p>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+	<div class='content'>
+		<div class='title'><h1>BlockChain</h1></div>
+		<div class='blocks'>
+			{% for block in chain %}
+				<div class='block'>
+					<label id='block-info'>id :</label><h3>{{block.id}}</h3><br>
+					<label id='block-info'>hash :</label><h3>{{block.hash}}</h3><br>
+					<label id='block-info'>previous hash :</label><h3>{{block.prevHash}}</h3><br>
+					<label id='block-info'>time :</label><h3>{{block.time}}</h3><br>
+					<div class='transactions'>
+						{% for transaction in block.transactions %}
+							<label id='transaction-info'>sender :</label>{{transaction['sender']}}<br>
+							<label id='transaction-info'>recipient :</label>{{transaction['recipient']}}<br>
+							<label id='transaction-info'>amount :</label>{{transaction['amount']}}<br>
+							<label id='transaction-info'>time :</label>{{transaction['time']}}<br><hr>
+						{% endfor %}
+						{% if not block.transactions %}
+							No Transactions
+						{% endif %}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}

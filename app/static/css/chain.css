@@ -1,0 +1,76 @@
+.chain {
+	font-family: 'Karla', sans-serif;
+
+	position: relative;
+
+	color: white;
+	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
+
+	height: 94vh;
+
+	overflow: auto;
+}
+
+.content {
+	display: flex;
+	align-items: stretch;
+	height: 100%;
+}
+
+.title {
+	width: 20%;
+}
+
+h1 {
+	text-align: center;
+	padding: 50px;
+	padding-bottom: 0;
+}
+
+.blocks {
+	display: flex;
+	align-items: center;
+	width: 80%;
+	overflow-x: auto;
+	background-color:rgb(29, 29, 32);
+}
+
+.block {
+	position: relative;
+	overflow-wrap: break-word;
+	padding: 20px;
+	height: 700px;
+	width: 400px;
+	margin: 50px;
+	border: 1px solid rgb(172, 172, 172);
+	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
+}
+
+#transaction-info {
+	padding-right: 10px;
+}
+
+.block:hover .transactions {
+	opacity: 1;
+	transition: opacity 250ms linear;
+}
+
+.transactions {
+	opacity: 0;
+	position: absolute;
+	overflow-y: auto;
+	background-color: rgb(29, 29, 32);
+	padding: 20px;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+}
+
+.transactions::-webkit-scrollbar {
+  display: none;
+}
+
+h3 {
+	font-weight: 300;
+}

@@ -1,0 +1,47 @@
+.mine {
+	font-family: 'Karla', sans-serif;
+
+	color: white;
+	background: linear-gradient(to top, rgb(29, 29, 32) 10%, rgb(54, 55, 61));
+
+	height: 94vh;
+
+	overflow: auto;
+}
+
+h1 {
+	text-align: center;
+	padding: 50px;
+	padding-bottom: 0;
+}
+
+table {
+	margin: 50px auto;
+	margin-bottom: 30px;
+}
+
+#headers {
+	background-color:rgb(29, 29, 32);
+}
+
+th, td, tr {
+	padding: 10px 80px;
+	border-bottom: 0.5px solid white;
+}
+
+.mine-transactions {
+	width: 55%;
+	margin: 0 auto;
+}
+
+#mine-trans {
+	padding: 4px 20px;
+	margin: 20px 20px;
+	margin-left: 155px;
+	-webkit-transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+	transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+}
+
+#mine-trans:hover {
+	box-shadow: 0 0 40px 40px #646161 inset;
+}

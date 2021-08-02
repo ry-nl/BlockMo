@@ -6,7 +6,7 @@
 
 
 {% block body %}
-<div class='transactions'>
+<div class='mine'>
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
 			{% for message in messages %}
@@ -17,7 +17,7 @@
 	<h1>Pending Transactions</h1>
 	<div class='pending-transactions'>
 		<table>
-			<tr>
+			<tr id='headers'>
 				<th>Sender</th>
 				<th>Recipient</th>
 				<th>Amount</th>

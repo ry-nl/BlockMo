@@ -34,9 +34,7 @@
 
                                         <a class="nav-link {{'active' if currentPage == 'mine'}} {{'disabled' if not user}}" href={{ url_for('mine') }}>Mine</a>
 
-                                        <a class="nav-link {{'active' if currentPage == 'chain'}} {{'disabled' if not user}}" href='#'>Chain</a>
-
-                                        <a class="nav-link {{'active' if currentPage == 'viewDB'}}" href={{ url_for('viewDB') }}>ViewDB</a>
+                                        <a class="nav-link {{'active' if currentPage == 'chain'}} {{'disabled' if not user}}" href={{ url_for('chain') }}>Chain</a>
 
                                         {% if not user %}
                                                 <a class="nav-link {{'active' if currentPage == 'login'}}" href={{ url_for('login') }}>Log in</a>

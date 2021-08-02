@@ -1,6 +1,5 @@
 from app.block import *
 from app.transaction import *
-from time import time
 from urllib.parse import urlparse
 import requests
 
@@ -8,14 +7,13 @@ class BlockChain:
 	def __init__(self):
 		self.chain = [self.genesisBlock()]
 		self.unfulfilledTransactions = []
-		self.difficulty = 3
+		self.difficulty = 5
 		self.miningReward = 20
 		self.nodes = set()
-		print('INIT')
 
 
 	def genesisBlock(self):
-		return Block(0, [], time())
+		return Block(0, [], self.getLocalTime())
 		
 
 	def makeTransaction(self, key, sender, senderKey, recipient, recipientKey, amount):
@@ -61,7 +59,7 @@ class BlockChain:
 
 			blockTransactions = self.unfulfilledTransactions[slice: sliceEnd]
 
-			block = Block(len(self.chain), blockTransactions, time())
+			block = Block(len(self.chain), blockTransactions, self.getLocalTime())
 			self.addBlock(block)
 
 		minerReward = Transaction('System', 'Mining Reward', recipient, rewardAddress, self.miningReward)
@@ -77,6 +75,16 @@ class BlockChain:
 				return False
 
 		return True
+
+	
+	def clearDuplicates(self):
+		seenBlockHashes = []
+		for block in self.chain:
+			if block.hash not in seenBlockHashes:
+				seenBlockHashes.append(block.hash)
+			else:
+				self.chain.remove(block)
+		
 		
 
 	def createNode(self, address):
@@ -124,6 +132,13 @@ class BlockChain:
 				pass	
 			
 		return balance
+
+
+	def getLocalTime(self):
+		timeStruct = localtime()
+		timeString = ':'.join([str(timeStruct[3]), str(timeStruct[4]).zfill(2)])
+		dateString = '/'.join([str(timeStruct[1]), str(timeStruct[2]), str(timeStruct[0])[2:]])
+		return timeString + ' - ' + dateString
 	
 
 	def encodeJSON(self):
@@ -152,11 +167,11 @@ class BlockChain:
 					transaction.SHAhash = transactionJSON['SHAhash']
 					transactions.append(transaction)
 
-				block = Block(blockJSON['id'], transactions, blockJSON['time']);
-				block.hash = blockJSON['hash'];
-				block.prevHash =blockJSON['prevHash'];
-				block.nonce = blockJSON['nonce'];
+				block = Block(blockJSON['id'], transactions, blockJSON['time'])
+				block.hash = blockJSON['hash']
+				block.prevHash =blockJSON['prevHash']
+				block.nonce = blockJSON['nonce']
 
-				chain.append(block);
+				chain.append(block)
 
-			return chain;
+			return chain

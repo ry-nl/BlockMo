@@ -16,7 +16,7 @@ h1 {
 }
 
 .form-div {
-	width: 30%;
+	width: 40%;
 	margin: 0 auto;
 	text-align: left;
 }
@@ -38,7 +38,7 @@ form {
 
 #category {
 	display: inline-block;
-	width: 300px;
+	width: 600px;
 }
 
 #submit {

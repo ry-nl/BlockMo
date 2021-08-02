@@ -39,13 +39,30 @@ def send():
         if not recipient:
             flash('Recipient does not exist')
             return render_template('send.html', user=user, currentPage='send')
+        if not transactionAmount:
+            flash('Enter an amount')
+            return render_template('send.html', user=user, currentPage='send')
+        amount = None
+        try:
+            amount = int(transactionAmount)
+        except:
+            flash('Enter valid amount to be sent')
+            return render_template('send.html', user=user, currentPage='send')
         # make sure the user balance is sufficient
-        if sender.balance < int(transactionAmount):
+        if sender.balance < amount:
             flash('Transaction amount exceeds funds available')
             return render_template('send.html', user=user, currentPage='send')
         # make sure transaction amount is non-zero and non-negative
-        if int(transactionAmount) <= 0:
+        if amount <= 0:
             flash('Enter valid amount to be sent')
+            return render_template('send.html', user=user, currentPage='send')
+        # make sure all of user's pending transactions is less than total available funds
+        totalOutgoing = 0
+        for transaction in blockchain.unfulfilledTransactions:
+            if sender.username == transaction.sender:
+                totalOutgoing += transaction.amount
+        if totalOutgoing + amount > sender.balance:
+            flash('Transaction amount exceeds funds available')
             return render_template('send.html', user=user, currentPage='send')
 
         recipientKey = recipient.publicKey
@@ -122,6 +139,7 @@ def mine():
                     valid = True
 
             if valid:
+                blockchain.clearDuplicates()
                 if transaction['sender'] != 'System':
                     sender.balance = blockchain.getUserBalance(transaction['sender'])
                     print(sender.balance)
@@ -397,6 +415,18 @@ def deleteAccount():
 #             pass
 #         return render_template('emailauthorize.html', currentPage='emailauthorize')
 
+# VIEW CHAIN
+@app.route('/chain/')
+def chain():
+    userData = getUserFromSession()
+
+    if not userData:
+        return redirect(url_for('login'))
+
+    blockchain.createConsensus()
+
+    return render_template('chain.html', user=userData, chain=blockchain.chain, currentPage='chain')
+
 # API ROUTE TO GET CHAIN IN JSON
 @app.route('/chain/info/')
 def getChain():
@@ -418,8 +448,8 @@ def viewAccount():
 
     return render_template('viewaccount.html', user=user, currentPage='viewaccount')
 
-# TEMPORARY ROUTE TO VIEW DATABASE
-@app.route('/viewDB/')
-def viewDB():
-    user = getUserFromSession()
-    return render_template('viewDB.html', user=user, currentPage='viewDB', values=User.query.all())
+# # TEMPORARY ROUTE TO VIEW DATABASE
+# @app.route('/viewDB/')
+# def viewDB():
+#     user = getUserFromSession()
+#     return render_template('viewDB.html', user=user, currentPage='viewDB', values=User.query.all())

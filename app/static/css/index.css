@@ -23,6 +23,12 @@
 	z-index: 100;
 }
 
+#inline-logo {
+	height: 100px;
+	width: 100px;
+	margin-bottom: 20px;
+}
+
 .blocks1 {
 	position: absolute;
 	display: block;
