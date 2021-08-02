@@ -53,3 +53,8 @@ p {
 	float: right;
 	width: 300px;
 }
+
+#id {
+	text-align: center;
+	padding-top: 20px;
+}

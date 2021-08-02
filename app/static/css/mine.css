@@ -45,3 +45,8 @@ th, td, tr {
 #mine-trans:hover {
 	box-shadow: 0 0 40px 40px #646161 inset;
 }
+
+#flash {
+	text-align: center;
+	padding-top: 20px;
+}

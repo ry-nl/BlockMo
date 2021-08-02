@@ -374,6 +374,7 @@ def emailAuthorize():
             session['isVerified'] = True
             return redirect(url_for('createAccount'))
         else:
+            flash('Authentication key incorrect')
             return render_template('emailauthorize.html', currentPage='emailauthorize')
     else:
         #email log in to send to user

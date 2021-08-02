@@ -38,3 +38,8 @@ form {
         padding: 0 20px;
         margin: 20px 80px;
 }
+
+#flash {
+        text-align: center;
+        padding-top: 20px;
+}
