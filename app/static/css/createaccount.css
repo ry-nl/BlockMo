@@ -29,8 +29,8 @@ form {
 }
 
 #submit {
-        text-align: center;
-        left: 100px;
+        position: absolute;
+        left: 990px;
         padding: 0 20px;
         margin: 20px 20px;
         -webkit-transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;

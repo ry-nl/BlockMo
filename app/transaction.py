@@ -14,6 +14,8 @@ class Transaction:
 		self.amount = amount
 		self.time = self.getTransactionTime()
 
+		self.signature = None
+
 		self.hash = self.transactionHash().hexdigest()
 		self.SHAhash = self.transactionHash()
 
@@ -52,7 +54,7 @@ class Transaction:
 			print('hashes do not match')
 			return False
 
-		if len(self.signature) <= 0 or not self.signature:
+		if not self.signature or len(self.signature) <= 0:
 			print('transaction not signed')
 			return False
 		

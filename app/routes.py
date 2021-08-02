@@ -5,6 +5,8 @@ from Crypto.PublicKey import RSA
 from app import app, db, blockchain
 from app.src.helpers import *
 from app.models import User
+import secrets
+import smtplib
 
 # HOME ROUTE
 @app.route('/')
@@ -104,23 +106,9 @@ def mine():
     if not user:
         return redirect(url_for('login'))
 
-    # pendingTransactions = Transaction.query.filter_by(validated=False).all()
-    # print(pendingTransactions)
-
-    # originalPendingTransactions = []
-    # for transaction in pendingTransactions:
-    #     if transaction.original == True:
-    #         originalPendingTransactions.append(transaction)
-    # print(originalPendingTransactions)
-
-    # pendingTransactionData = []
-    # for transaction in originalPendingTransactions:
-    #     pendingTransactionData.append(transaction.dictify())
-
     pendingTransactions = []
     for transaction in blockchain.unfulfilledTransactions:
         pendingTransactions.append(transaction.dictify())
-
 
     if request.method == 'POST':
         if not blockchain.mineTransactions(user['username'], getPublicKey(user['publicKey'])):
@@ -151,29 +139,8 @@ def mine():
                 except:
                     db.session.rollback()
 
-        # for transaction in pendingTransactions:
-        #     print('RUN')
-        #     senderUsername = transaction['sender']
-        #     recipientUsername = transaction['recipient']
-
-        #     sender = User.query.filter_by(username=senderUsername).first()
-        #     recipient = User.query.filter_by(username=recipientUsername).first()
-
-        #     amount = int(transaction['amount'])
-
-        #     sender.balance -= amount
-        #     recipient.balance += amount
-            
-        #     try:
-        #         db.session.add(Transaction(sender, recipient, amount, sender))
-        #         db.session.add(Transaction(sender, recipient, amount, recipient))
-        #         db.session.commit()
-        #     except:
-        #         print('ISSUE')
-        #         db.session.rollback()
-
         flash('Transactions successfully mined! Your reward has been added to the pending transactions')
-        return render_template('mine.html', user=user, currentPage='mine')
+        return render_template('mine.html', user=user, unfulfilledTransactions=blockchain.unfulfilledTransactions, currentPage='mine')
     else:
         blockchain.createConsensus()
         return render_template('mine.html', user=user, unfulfilledTransactions=pendingTransactions, currentPage='mine')
@@ -234,61 +201,61 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('home'))
 
-# CREATE ACCOUNT ROUTE
-@app.route('/createaccount/', methods=['GET', 'POST'])
-def createAccount():
-    user = None
-    # if form is submitted
-    if request.method == 'POST':
-        # get user info from form
-        username = request.form['username']
-        email = request.form['email']
-        name = request.form['name']
-        password = request.form['password']
+# # CREATE ACCOUNT ROUTE
+# @app.route('/createaccount/', methods=['GET', 'POST'])
+# def createAccount():
+#     user = None
+#     # if form is submitted
+#     if request.method == 'POST':
+#         # get user info from form
+#         username = request.form['username']
+#         email = request.form['email']
+#         name = request.form['name']
+#         password = request.form['password']
 
-        if not username or not email or not name or not password:
-            flash('One or more fields missing')
-            return render_template('createaccount.html', user=user, currentPage='createaccount')
+#         if not username or not email or not name or not password:
+#             flash('One or more fields missing')
+#             return render_template('createaccount.html', user=user, currentPage='createaccount')
         
-        # if len(username) < 3 or not email.endswith('.com') or '@' not in email or len(name) < 2 or len(password) < 6:
+#         # if len(username) < 3 or not email.endswith('.com') or '@' not in email or len(name) < 2 or len(password) < 6:
 
-        # find username and email from database
-        userByUsername = User.query.filter_by(username=username).first()
-        userByEmail = User.query.filter_by(email=email).first()
-        # if exist in database, flash message and redirect to page
-        if userByUsername or userByEmail:
-            # since email is primary key, if email already exists, ask to log in
-            if userByEmail:
-                flash('Email already registered, please log in')
-            # if username already exists, ask to choose another
-            else:
-                flash('Username taken, please choose another')
-            # redirect to create account page
-            return render_template('createaccount.html', user=user, currentPage='createaccount')
-        # hash the password to be stored
-        hashedPassword = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
-        # create user
-        user = User(name, username, hashedPassword, email)
-        # add user to session
-        session['user'] = user.dictify()
-        # add user to database
-        try:
-            db.session.add(user)
-            db.session.commit()
-        except:
-            db.session.rollback()
-            session.pop('user', None)
-            flash('Error adding user to database')
-            return render_template('createaccount.html', user=user, currentPage='createaccount')
+#         # find username and email from database
+#         userByUsername = User.query.filter_by(username=username).first()
+#         userByEmail = User.query.filter_by(email=email).first()
+#         # if exist in database, flash message and redirect to page
+#         if userByUsername or userByEmail:
+#             # since email is primary key, if email already exists, ask to log in
+#             if userByEmail:
+#                 flash('Email already registered, please log in')
+#             # if username already exists, ask to choose another
+#             else:
+#                 flash('Username taken, please choose another')
+#             # redirect to create account page
+#             return render_template('createaccount.html', user=user, currentPage='createaccount')
+#         # hash the password to be stored
+#         hashedPassword = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+#         # create user
+#         user = User(name, username, hashedPassword, email)
+#         # add user to session
+#         session['user'] = user.dictify()
+#         # add user to database
+#         try:
+#             db.session.add(user)
+#             db.session.commit()
+#         except:
+#             db.session.rollback()
+#             session.pop('user', None)
+#             flash('Error adding user to database')
+#             return render_template('createaccount.html', user=user, currentPage='createaccount')
         
-        blockchain.createNode(request.url_root)
+#         blockchain.createNode(request.url_root)
 
-        # redirect to home if logged in
-        return redirect(url_for('home'))
-    # if page is pulled up
-    else:
-        # render create account page
-        return render_template('createaccount.html', user=user, currentPage='createaccount')
+#         # redirect to home if logged in
+#         return redirect(url_for('home'))
+#     # if page is pulled up
+#     else:
+#         # render create account page
+#         return render_template('createaccount.html', user=user, currentPage='createaccount')
 
 # DELETE ACCOUNT ROUTE
 @app.route('/deleteaccount/', methods=['POST'])
@@ -312,108 +279,125 @@ def deleteAccount():
     os.remove(f"app/wallets/{user.username}private.pem")
     os.remove(f"app/wallets/{user.username}public.pem")
     
+    blockchain.removeNode(request.url_root)
+    
     return redirect(url_for('home'))
 
+# CREAT ACCOUNT ROUTE
+@app.route('/createaccount/', methods=['GET', 'POST'])
+def createAccount():
+    # if a user is already logged in redirect to home
+    if getUserFromSession():
+        return redirect(url_for('home'))
+    # if form is submitted
+    if request.method == 'POST':
+        # get username and email from sign up form
+        username = request.form['username']
+        email = request.form['email']
+        name = request.form['name']
+        password = request.form['password']
+        if not username or not email or not name or not password:
+            flash('One or more fields left empty')
+            return render_template('createaccount.html', currentPage='createaccount')
+        if len(password) < 5:
+            flash('Password too short')
+            return render_template('createaccount.html', currentPage='createaccount')
+        if len(username) < 5:
+            flash('Username too short')
+            return render_template('createaccount.html', currentPage='createaccount')
+        if len(name) < 2:
+            flash('Name too short')
+            return render_template('createaccount.html', currentPage='createaccount')
+        if not email.endswith('.com') or '@' not in email:
+            flash('Enter valid email')
+            return render_template('createaccount.html', currentPage='createaccount')
+        # find username and email from database
+        userByUsername = User.query.filter_by(username=username).first()
+        userByEmail = User.query.filter_by(email=email).first()
+        # if exist in database, flash message and redirect to page
+        if userByUsername or userByEmail:
+            # since email is primary key, if email already exists, ask to log in
+            if userByEmail:
+                flash('Email already registered, please log in')
+            # if username already exists, ask to choose another
+            else:
+                flash('Username taken, please choose another')
+            # redirect to create account page
+            return render_template('createaccount.html', currentPage='createaccount')
+        # hash the password to be stored
+        hashedPassword = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+        # create user
+        user = User(name, username, hashedPassword, email)
+        session['unverifiedUser'] = user.dictify()
+        session['unverifiedUserPW'] = hashedPassword
+        return redirect(url_for('emailAuthorize'))
+    # if page is pulled up
+    else:
+        # user's email has been verified
+        if session.get('isVerified', None):
+            # add user to session
+            session['user'] = session['unverifiedUser']
+            # create user object to be stored in database
+            user = User(session['user']['name'], session['user']['username'], session['unverifiedUserPW'], session['user']['email'])
+            # remove all sensitive and temporary data from the session
+            session.pop('isVerified', None)
+            session.pop('unverifiedUser', None)
+            session.pop('unverifiedUserPW', None)
+            # add user to database
+            try:
+                db.session.add(user)
+                db.session.commit()
+            except:
+                db.session.rollback()
+                flash('Error adding user to database')
+                session.pop('user', None)
+                return render_template('createaccount.html', currentPage='createaccount')
+            blockchain.createNode(request.url_root)
+            # redirect to home if logged in
+            return redirect(url_for('home'))
+        # user's email has not yet been verified
+        else:
+            return render_template('createaccount.html', currentPage='createaccount')
 
-# @app.route('/createaccount/', methods=['GET', 'POST'])
-# def createAccount():
-#     # if a user is already logged in redirect to home
-#     if getUserFromSession():
-#         return redirect(url_for('home'))
-#     # if form is submitted
-#     if request.method == 'POST':
-#         # get username and email from sign up form
-#         username = request.form['username']
-#         email = request.form['email']
-#         # find username and email from database
-#         userByUsername = User.query.filter_by(username=username).first()
-#         userByEmail = User.query.filter_by(email=email).first()
-#         # if exist in database, flash message and redirect to page
-#         if userByUsername or userByEmail:
-#             # since email is primary key, if email already exists, ask to log in
-#             if userByEmail:
-#                 flash('Email already registered, please log in')
-#             # if username already exists, ask to choose another
-#             else:
-#                 flash('Username taken, please choose another')
-#             # redirect to create account page
-#             return render_template('createaccount.html', user=user, currentPage='createaccount')
-#         # if new user, get remaining user info
-#         name = request.form['name']
-#         password = request.form['password']
-#         # hash the password to be stored
-#         hashedPassword = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
-#         # create user
-#         user = User(name, username, hashedPassword, email)
-#         session['unverifiedUser'] = user.dictify()
-#         session['unverifiedUserPW'] = hashedPassword
-#         return redirect(url_for('emailAuthorize'))
-#     # if page is pulled up
-#     else:
-#         # user's email has been verified
-#         if session.get('isVerified', None):
-#             # add user to session
-#             session['user'] = session['unverifiedUser']
-#             # create user object to be stored in database
-#             user = User(session['user']['name'], session['user']['username'], session['unverifiedUserPW'], session['user']['email'])
-#             # remove all sensitive and temporary data from the session
-#             session.pop('isVerified', None)
-#             session.pop('unverifiedUser', None)
-#             session.pop('unverifiedUserPW', None)
-#             # add user to database
-#             try:
-#                 db.session.add(user)
-#                 db.session.commit()
-#             except:
-#                 db.session.rollback()
-#                 flash('Error adding user to database')
-#                 return render_template('createaccount.html', currentPage='createaccount')
-#             # redirect to home if logged in
-#             return redirect(url_for('home'))
-#         # user's email has not yet been verified
-#         else:
-#             return render_template('createaccount.html', currentPage='createaccount')
+# AUTHORIZE EMAIL ROUTE
+@app.route('/emailauthorize/', methods = ['POST', 'GET'])
+def emailAuthorize():
+    if not session.get('unverifiedUser', None):
+        return redirect(url_for('home'))
 
-# # AUTHORIZE EMAIL ROUTE
-# @app.route('/emailauthorize/', methods = ['POST', 'GET'])
-# def emailAuthorize():
-    
-#     if not session.get('unverifiedUser', None):
-#         return redirect(url_for('home'))
-
-#     if request.method == 'POST':
+    if request.method == 'POST':
         
-#         userToken = request.form['Email Authorization Key']
-#         if userToken == session['userAuthorKey']:
-#             session.pop('userAuthorKey', None)
+        userToken = request.form['Email Authorization Key']
+        if userToken == session['userAuthorKey']:
+            session.pop('userAuthorKey', None)
 
-#             session['isVerified'] = True
-#             return redirect(url_for('createAccount'))
-#         else:
-#             return render_template('emailauthorize.html', currentPage='emailauthorize')
-#     else:
-#         #email log in to send to user
-#         sender = "testDummy2113@gmail.com"
-#         receiver =  session['unverifiedUser']['email']
-#         password = "throwuponmybal"
-#         subject = "BLOCKMO AUTHORIZATION KEY"
-#         authenticationEmail = secrets.token_hex(3)
-#         session['userAuthorKey'] = authenticationEmail
-#         body = "Case sensitive authorization key: " + authenticationEmail
-#         #header
-#         message = f"""From: {sender}
-#         To: {receiver}
-#         Subject: {subject}\n
-#         {body}
-#         """
-#         server = smtplib.SMTP("smtp.gmail.com", 587)
-#         server.starttls()
-#         try:
-#             server.login(sender, password)
-#             server.sendmail(sender, receiver, message)
-#         except smtplib.SMTPAuthenticationError:
-#             pass
-#         return render_template('emailauthorize.html', currentPage='emailauthorize')
+            session['isVerified'] = True
+            return redirect(url_for('createAccount'))
+        else:
+            return render_template('emailauthorize.html', currentPage='emailauthorize')
+    else:
+        #email log in to send to user
+        sender = "testDummy2113@gmail.com"
+        receiver =  session['unverifiedUser']['email']
+        password = "throwuponmybal"
+        subject = "BLOCKMO AUTHORIZATION KEY"
+        authenticationEmail = secrets.token_hex(3)
+        session['userAuthorKey'] = authenticationEmail
+        body = "Case sensitive authorization key: " + authenticationEmail
+        #header
+        message = f"""From: {sender}
+        To: {receiver}
+        Subject: {subject}\n
+        {body}
+        """
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        try:
+            server.login(sender, password)
+            server.sendmail(sender, receiver, message)
+        except smtplib.SMTPAuthenticationError:
+            pass
+        return render_template('emailauthorize.html', currentPage='emailauthorize')
 
 # VIEW CHAIN
 @app.route('/chain/')

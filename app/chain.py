@@ -17,7 +17,7 @@ class BlockChain:
 		
 
 	def makeTransaction(self, key, sender, senderKey, recipient, recipientKey, amount):
-		if not senderKey or not recipientKey or not amount:
+		if not key or not senderKey or not recipientKey or not amount:
 			return False
 
 		senderKey_encoded = senderKey.export_key('PEM')
@@ -89,8 +89,14 @@ class BlockChain:
 
 	def createNode(self, address):
 		url = urlparse(address)
-		print(url.netloc)
 		self.nodes.add(url.netloc)
+
+
+	def removeNode(self, address):
+		url = urlparse(address)
+		try:
+			self.nodes.remove(url.netloc)
+		except: pass
 
 
 	def createConsensus(self):

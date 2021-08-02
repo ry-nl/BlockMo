@@ -29,18 +29,13 @@ form {
 }
 
 #submit {
-        text-align: left;
-        
-        left: 180px;
+        position: absolute;
         padding: 0 20px;
+        left: 990px;
         margin: 20px 20px;
 
         -webkit-transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
          transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
-        
-        #submit:hover {
-                box-shadow: 0 0 40px 40px #646161 inset;
-        }
 }
 
 #submit:hover {
